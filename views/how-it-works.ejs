@@ -1,0 +1,412 @@
+<style>
+    /* ── Animations ── */
+    @keyframes float-slow { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
+    @keyframes float-med  { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-8px);  } }
+    @keyframes pop-in     { 0%   { opacity:0; transform: scale(0.85) translateY(20px); }
+                            100% { opacity:1; transform: scale(1)    translateY(0);    } }
+    @keyframes slide-in-left  { 0%   { opacity:0; transform: translateX(-40px); }
+                                 100% { opacity:1; transform: translateX(0);     } }
+    @keyframes slide-in-right { 0%   { opacity:0; transform: translateX(40px); }
+                                 100% { opacity:1; transform: translateX(0);    } }
+    @keyframes pulse-ring { 0%   { box-shadow: 0 0 0 0  rgba(124,58,237,0.25); }
+                             70%  { box-shadow: 0 0 0 16px rgba(124,58,237,0);  }
+                             100% { box-shadow: 0 0 0 0  rgba(124,58,237,0);    } }
+    @keyframes ticker     { 0%   { transform: translateX(0);     }
+                             100% { transform: translateX(-50%); } }
+    @keyframes scan-line  { 0%   { top: 0; opacity: 1; }
+                             80%  { top: 100%; opacity: 0.5; }
+                             100% { top: 0; opacity: 0; } }
+    @keyframes glow-pulse { 0%,100% { opacity:.4; } 50% { opacity:1; } }
+    @keyframes draw-line  { 0%   { stroke-dashoffset: 200; } 100% { stroke-dashoffset: 0; } }
+
+    .float-slow   { animation: float-slow 6s ease-in-out infinite; }
+    .float-med    { animation: float-med  4s ease-in-out infinite; }
+    .pop-in       { animation: pop-in 0.7s cubic-bezier(0.16,1,0.3,1) both; }
+    .slide-left   { animation: slide-in-left  0.7s cubic-bezier(0.16,1,0.3,1) both; }
+    .slide-right  { animation: slide-in-right 0.7s cubic-bezier(0.16,1,0.3,1) both; }
+    .pulse-ring   { animation: pulse-ring 2.5s ease-out infinite; }
+    .glow-pulse   { animation: glow-pulse 2s ease-in-out infinite; }
+
+    .scroll-reveal { opacity:0; transform: translateY(28px); transition: opacity .6s ease, transform .6s ease; }
+    .scroll-reveal.visible { opacity:1; transform: translateY(0); }
+
+    /* Scan line for step 1 */
+    .scan-line { position:absolute; left:0; right:0; height:3px;
+                 background: linear-gradient(90deg, transparent, #7c3aed, transparent);
+                 animation: scan-line 2.4s ease-in-out infinite; border-radius:9999px; }
+
+    /* Ticker */
+    .ticker-track { display:flex; width:max-content; animation: ticker 18s linear infinite; }
+    .ticker-track:hover { animation-play-state: paused; }
+
+    /* Connector line */
+    .connector { position:relative; }
+    .connector::after { content:''; position:absolute; top:50%; left:100%;
+                        width:60px; height:2px;
+                        background: linear-gradient(90deg, #e9d5ff, #c4b5fd);
+                        transform: translateY(-50%); }
+    @media(max-width:768px){ .connector::after { display:none; } }
+
+    /* Step card hover */
+    .step-card { transition: transform .4s cubic-bezier(.2,.8,.2,1), box-shadow .4s; }
+    .step-card:hover { transform: translateY(-8px); box-shadow: 0 24px 56px -12px rgba(124,58,237,.15); }
+</style>
+
+<div class="max-w-6xl mx-auto py-8 px-4 space-y-32">
+
+    <!-- ── 1. Hero ── -->
+    <section class="text-center space-y-6 pop-in">
+        <span class="inline-block px-4 py-1.5 bg-purple-50 text-purple-600 text-[10px] font-extrabold uppercase tracking-[.25em] rounded-full border border-purple-100">
+            <i class="fas fa-wand-magic-sparkles mr-1"></i> Full Feature Walkthrough
+        </span>
+        <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-gray-900 leading-tight">
+            Everything you need to know<br/>
+            about <span class="text-purple-600">KamiVault</span>
+        </h1>
+        <p class="text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
+            KamiVault turns stacks of physical paper into searchable, sharable, and secure digital records — automatically.
+        </p>
+    </section>
+
+    <!-- ── 2. Bird's-eye Overview ── -->
+    <section class="scroll-reveal">
+        <div class="bg-gradient-to-br from-gray-900 to-purple-950 rounded-[56px] p-10 md:p-16 text-white overflow-hidden relative">
+            <!-- decorative circles -->
+            <div class="absolute -top-16 -right-16 h-64 w-64 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-12 -left-12 h-48 w-48 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10 space-y-10">
+                <div class="text-center space-y-3">
+                    <p class="text-[10px] font-extrabold text-purple-400 uppercase tracking-[.3em]">The Big Picture</p>
+                    <h2 class="text-3xl font-bold">Three simple stages</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white/5 backdrop-blur border border-white/10 rounded-[32px] p-8 space-y-4 hover:bg-white/10 transition-all float-slow">
+                        <div class="h-12 w-12 bg-purple-500/20 rounded-2xl flex items-center justify-center text-purple-300 text-xl">
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg">1. Upload</h3>
+                            <p class="text-sm text-gray-400 mt-1">You drop in your physical document files (photos, PDFs, scans).</p>
+                        </div>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur border border-white/10 rounded-[32px] p-8 space-y-4 hover:bg-white/10 transition-all float-med" style="animation-delay:.8s">
+                        <div class="h-12 w-12 bg-blue-500/20 rounded-2xl flex items-center justify-center text-blue-300 text-xl">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg">2. AI Reads It</h3>
+                            <p class="text-sm text-gray-400 mt-1">Our AI (Google Gemini) reads the document and pulls out every important field.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white/5 backdrop-blur border border-white/10 rounded-[32px] p-8 space-y-4 hover:bg-white/10 transition-all float-slow" style="animation-delay:1.4s">
+                        <div class="h-12 w-12 bg-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-300 text-xl">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg">3. Saved & Searchable</h3>
+                            <p class="text-sm text-gray-400 mt-1">Everything is stored neatly in a database. You can search, filter, and share instantly.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── 3. Step-by-step deep dive ── -->
+    <section class="space-y-24">
+        <div class="text-center space-y-2 scroll-reveal">
+            <p class="text-[10px] font-extrabold text-purple-500 uppercase tracking-[.3em]">How It Actually Works</p>
+            <h2 class="text-3xl font-bold text-gray-900">Step by Step</h2>
+        </div>
+
+        <!-- Step 1: Create a Collection -->
+        <div class="grid md:grid-cols-2 gap-16 items-center scroll-reveal">
+            <div class="space-y-6 slide-left">
+                <div class="inline-flex items-center space-x-3">
+                    <span class="h-8 w-8 bg-purple-600 text-white rounded-xl flex items-center justify-center text-[11px] font-black">01</span>
+                    <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Getting Started</span>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 leading-tight">Create a Collection</h3>
+                <p class="text-gray-500 leading-relaxed">
+                    A <strong class="text-gray-700">Collection</strong> (also called a Scroll) is like a folder for one type of document — for example, all your "Land Registration" papers or "Health Records".
+                </p>
+                <p class="text-gray-500 leading-relaxed">
+                    You give it a name, pick its department, and KamiVault sets everything up: a secure cloud folder, a fresh database table, and your own private workspace.
+                </p>
+                <div class="flex flex-wrap gap-2 pt-2">
+                    <span class="px-3 py-1 bg-amber-50 text-amber-700 rounded-lg text-[11px] font-bold border border-amber-100">Land</span>
+                    <span class="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[11px] font-bold border border-emerald-100">Health</span>
+                    <span class="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-[11px] font-bold border border-indigo-100">Municipal</span>
+                    <span class="px-3 py-1 bg-rose-50 text-rose-700 rounded-lg text-[11px] font-bold border border-rose-100">Revenue</span>
+                    <span class="px-3 py-1 bg-sky-50 text-sky-700 rounded-lg text-[11px] font-bold border border-sky-100">Education</span>
+                </div>
+            </div>
+            <!-- Visual -->
+            <div class="bg-white rounded-[40px] apple-shadow-lg p-8 border border-gray-50 slide-right space-y-4">
+                <div class="h-10 bg-purple-600 rounded-2xl flex items-center px-5 space-x-3 text-white">
+                    <i class="fas fa-plus text-sm"></i>
+                    <span class="text-[12px] font-bold">New Collection</span>
+                </div>
+                <div class="space-y-3">
+                    <div class="h-10 bg-gray-50 rounded-xl flex items-center px-4 text-[12px] text-gray-500 border border-gray-100">
+                        <span class="text-gray-300 mr-2"><i class="fas fa-tag"></i></span> Land Registration 2024
+                    </div>
+                    <div class="h-10 bg-gray-50 rounded-xl flex items-center px-4 text-[12px] text-gray-500 border border-gray-100">
+                        <span class="text-gray-300 mr-2"><i class="fas fa-building-columns"></i></span> Department: Land
+                    </div>
+                </div>
+                <div class="flex space-x-3 pt-2">
+                    <div class="flex-1 bg-purple-600 rounded-xl h-10 flex items-center justify-center text-white text-[11px] font-bold">Create</div>
+                    <div class="flex-1 bg-gray-50 rounded-xl h-10 flex items-center justify-center text-gray-400 text-[11px] font-bold">Cancel</div>
+                </div>
+                <div class="flex items-center space-x-2 pt-2">
+                    <div class="h-2 w-2 rounded-full bg-emerald-500 pulse-ring"></div>
+                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Secure storage created</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Upload a Sample -->
+        <div class="grid md:grid-cols-2 gap-16 items-center scroll-reveal">
+            <!-- Visual -->
+            <div class="order-last md:order-first bg-white rounded-[40px] apple-shadow-lg p-8 border border-gray-50 slide-left relative overflow-hidden">
+                <!-- Scan animation -->
+                <div class="relative bg-gray-50 rounded-2xl h-52 flex items-center justify-center overflow-hidden border border-gray-100">
+                    <div class="scan-line"></div>
+                    <div class="space-y-2 text-center z-10 px-4">
+                        <i class="fas fa-file-pdf text-rose-400 text-4xl"></i>
+                        <p class="text-[11px] font-bold text-gray-600">aadhaar_sample.pdf</p>
+                    </div>
+                </div>
+                <div class="mt-4 space-y-2">
+                    <div class="flex items-center justify-between px-1">
+                        <span class="text-[11px] text-gray-400">Analysing document structure...</span>
+                        <span class="text-[11px] font-bold text-purple-600 glow-pulse">AI Active</span>
+                    </div>
+                    <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-purple-500 rounded-full" style="width:75%;animation:ticker 4s ease-in-out infinite alternate"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="space-y-6 slide-right">
+                <div class="inline-flex items-center space-x-3">
+                    <span class="h-8 w-8 bg-purple-600 text-white rounded-xl flex items-center justify-center text-[11px] font-black">02</span>
+                    <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Teach the AI</span>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 leading-tight">Upload a Sample Document</h3>
+                <p class="text-gray-500 leading-relaxed">
+                    Before processing hundreds of files, you give KamiVault <strong class="text-gray-700">one example document</strong>. Our AI reads it and automatically figures out what fields exist — Name, Date, ID Number, Address, etc.
+                </p>
+                <p class="text-gray-500 leading-relaxed">
+                    This creates a reusable <strong class="text-gray-700">template</strong> that all future documents will be matched against. You only have to do this once per document type.
+                </p>
+                <div class="bg-purple-50 rounded-2xl p-4 border border-purple-100/50 flex items-start space-x-3">
+                    <i class="fas fa-lightbulb text-purple-500 mt-0.5"></i>
+                    <p class="text-[12px] text-purple-700 leading-relaxed">
+                        <strong>Tip:</strong> Use a clearly scanned or photographed document. The better the sample, the more accurate the AI extraction.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Bulk Upload -->
+        <div class="grid md:grid-cols-2 gap-16 items-center scroll-reveal">
+            <div class="space-y-6 slide-left">
+                <div class="inline-flex items-center space-x-3">
+                    <span class="h-8 w-8 bg-purple-600 text-white rounded-xl flex items-center justify-center text-[11px] font-black">03</span>
+                    <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Mass Digitization</span>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 leading-tight">Upload All Your Documents at Once</h3>
+                <p class="text-gray-500 leading-relaxed">
+                    Now that the AI knows what to look for, you can drag-and-drop <strong class="text-gray-700">up to 50 documents at a time</strong>. KamiVault processes each one:
+                </p>
+                <ul class="space-y-2 text-[13px] text-gray-500">
+                    <li class="flex items-start space-x-2"><i class="fas fa-circle-check text-emerald-500 mt-0.5 text-xs"></i><span>Uploads the original file securely to your private cloud (MinIO).</span></li>
+                    <li class="flex items-start space-x-2"><i class="fas fa-circle-check text-emerald-500 mt-0.5 text-xs"></i><span>Sends it through the AI to extract all the text fields.</span></li>
+                    <li class="flex items-start space-x-2"><i class="fas fa-circle-check text-emerald-500 mt-0.5 text-xs"></i><span>Saves the structured data into your personal database table.</span></li>
+                    <li class="flex items-start space-x-2"><i class="fas fa-circle-check text-emerald-500 mt-0.5 text-xs"></i><span>Each doc gets a status: <span class="font-bold text-emerald-600">Done</span>, <span class="font-bold text-amber-600">Processing</span>, or <span class="font-bold text-rose-600">Failed</span>.</span></li>
+                </ul>
+            </div>
+            <!-- Visual: file stack -->
+            <div class="bg-white rounded-[40px] apple-shadow-lg p-8 border border-gray-50 slide-right space-y-3">
+                <p class="text-[10px] font-extrabold text-gray-300 uppercase tracking-widest mb-4">Processing Queue</p>
+                <% const fakeFiles = [
+                    {name:'land_reg_001.pdf', status:'done'},
+                    {name:'land_reg_002.pdf', status:'done'},
+                    {name:'land_reg_003.pdf', status:'processing'},
+                    {name:'land_reg_004.pdf', status:'queued'},
+                ]; %>
+                <% fakeFiles.forEach(f => { %>
+                    <div class="flex items-center justify-between py-3 px-4 rounded-2xl <%= f.status === 'done' ? 'bg-emerald-50 border border-emerald-100' : f.status === 'processing' ? 'bg-blue-50 border border-blue-100' : 'bg-gray-50 border border-gray-100' %>">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-file-pdf text-rose-400 text-sm"></i>
+                            <span class="text-[11px] font-bold text-gray-700"><%= f.name %></span>
+                        </div>
+                        <% if (f.status === 'done') { %>
+                            <span class="text-[9px] font-extrabold text-emerald-600 uppercase tracking-widest bg-emerald-100 px-2.5 py-1 rounded-full">Done</span>
+                        <% } else if (f.status === 'processing') { %>
+                            <span class="text-[9px] font-extrabold text-blue-600 uppercase tracking-widest bg-blue-100 px-2.5 py-1 rounded-full glow-pulse">Reading...</span>
+                        <% } else { %>
+                            <span class="text-[9px] font-extrabold text-gray-400 uppercase tracking-widest bg-gray-100 px-2.5 py-1 rounded-full">Queued</span>
+                        <% } %>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+
+        <!-- Step 4: Search & Inspect -->
+        <div class="grid md:grid-cols-2 gap-16 items-center scroll-reveal">
+            <!-- Visual -->
+            <div class="order-last md:order-first bg-white rounded-[40px] apple-shadow-lg p-8 border border-gray-50 slide-left space-y-4">
+                <div class="flex items-center space-x-3 bg-gray-50 border border-gray-100 rounded-xl px-4 h-10">
+                    <i class="fas fa-magnifying-glass text-gray-300 text-sm"></i>
+                    <span class="text-[12px] text-gray-400">Vilas Rakhe...</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-[11px]">
+                    <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-1">
+                        <p class="text-[9px] text-gray-400 uppercase font-bold tracking-widest">Name</p>
+                        <p class="font-bold text-gray-800">Vilas Rakhe</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-1">
+                        <p class="text-[9px] text-gray-400 uppercase font-bold tracking-widest">ID Number</p>
+                        <p class="font-bold text-gray-800">7730 8892 163</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-1">
+                        <p class="text-[9px] text-gray-400 uppercase font-bold tracking-widest">Date of Birth</p>
+                        <p class="font-bold text-gray-800">30/05/1995</p>
+                    </div>
+                    <div class="bg-purple-50 rounded-2xl p-4 border border-purple-100 space-y-1">
+                        <p class="text-[9px] text-purple-500 uppercase font-bold tracking-widest">Status</p>
+                        <p class="font-bold text-purple-700"><i class="fas fa-circle-check mr-1 text-emerald-500"></i> Verified</p>
+                    </div>
+                </div>
+            </div>
+            <div class="space-y-6 slide-right">
+                <div class="inline-flex items-center space-x-3">
+                    <span class="h-8 w-8 bg-purple-600 text-white rounded-xl flex items-center justify-center text-[11px] font-black">04</span>
+                    <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Instant Access</span>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 leading-tight">Search, Filter & View Any Record</h3>
+                <p class="text-gray-500 leading-relaxed">
+                    Once processed, every document becomes a <strong class="text-gray-700">structured data record</strong>. You can search across all fields in real-time — type a name, an ID, or a date and results appear instantly.
+                </p>
+                <p class="text-gray-500 leading-relaxed">
+                    Click any record to open a <strong class="text-gray-700">detailed inspection view</strong> showing all extracted data alongside a live preview of the original physical document — no need to dig through physical files.
+                </p>
+            </div>
+        </div>
+
+        <!-- Step 5: Share & Collaborate -->
+        <div class="grid md:grid-cols-2 gap-16 items-center scroll-reveal">
+            <div class="space-y-6 slide-left">
+                <div class="inline-flex items-center space-x-3">
+                    <span class="h-8 w-8 bg-purple-600 text-white rounded-xl flex items-center justify-center text-[11px] font-black">05</span>
+                    <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Teamwork</span>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 leading-tight">Share Collections with Your Team</h3>
+                <p class="text-gray-500 leading-relaxed">
+                    You own your collection. But you can invite anyone on the platform by just entering their email address. Choose their role:
+                </p>
+                <div class="space-y-3">
+                    <div class="flex items-start space-x-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <i class="fas fa-eye text-gray-400 mt-0.5"></i>
+                        <div><p class="text-[12px] font-bold text-gray-800">Viewer</p><p class="text-[11px] text-gray-500">Can browse and search records. Cannot change anything.</p></div>
+                    </div>
+                    <div class="flex items-start space-x-3 p-4 bg-blue-50 rounded-2xl border border-blue-100">
+                        <i class="fas fa-pen text-blue-500 mt-0.5"></i>
+                        <div><p class="text-[12px] font-bold text-gray-800">Editor</p><p class="text-[11px] text-gray-500">Can upload new documents and process records.</p></div>
+                    </div>
+                    <div class="flex items-start space-x-3 p-4 bg-purple-50 rounded-2xl border border-purple-100">
+                        <i class="fas fa-crown text-purple-500 mt-0.5"></i>
+                        <div><p class="text-[12px] font-bold text-gray-800">Admin</p><p class="text-[11px] text-gray-500">Full access. Can invite or remove other users.</p></div>
+                    </div>
+                </div>
+                <p class="text-[12px] text-gray-400">Shared collections appear in their Vault automatically. You can revoke access any time.</p>
+            </div>
+            <!-- Visual -->
+            <div class="bg-white rounded-[40px] apple-shadow-lg p-8 border border-gray-50 slide-right space-y-5">
+                <p class="text-[10px] font-extrabold text-gray-300 uppercase tracking-widest">Collaborators</p>
+                <div class="flex items-center justify-between p-3 bg-purple-50 rounded-2xl border border-purple-100">
+                    <div class="flex items-center space-x-3">
+                        <div class="h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center text-white text-[10px] font-black">K</div>
+                        <div><p class="text-[11px] font-bold text-gray-900">kokomi@hydro.com</p><p class="text-[9px] text-purple-500 font-bold uppercase tracking-widest">Owner</p></div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-2xl transition-colors">
+                    <div class="flex items-center space-x-3">
+                        <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 text-[10px] font-black">A</div>
+                        <div><p class="text-[11px] font-bold text-gray-900">amal@agency.gov</p><p class="text-[9px] text-blue-500 font-bold uppercase tracking-widest">Editor</p></div>
+                    </div>
+                </div>
+                <div class="border-t border-gray-50 pt-5 space-y-2">
+                    <p class="text-[9px] text-gray-300 font-bold uppercase tracking-widest">Invite by Email</p>
+                    <div class="flex space-x-2">
+                        <div class="flex-1 h-10 bg-gray-50 rounded-xl border border-gray-100 px-3 flex items-center text-[11px] text-gray-400">new@teammate.com</div>
+                        <div class="h-10 px-4 bg-purple-600 rounded-xl flex items-center text-white text-[11px] font-bold">Invite</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── 4. Live Ticker (Tech Stack) ── -->
+    <section class="scroll-reveal overflow-hidden">
+        <p class="text-center text-[10px] font-extrabold text-gray-300 uppercase tracking-[.3em] mb-6">Built on</p>
+        <div class="relative overflow-hidden py-4 before:absolute before:left-0 before:top-0 before:z-10 before:h-full before:w-16 before:bg-gradient-to-r before:from-[#FBFBFD] after:absolute after:right-0 after:top-0 after:z-10 after:h-full after:w-16 after:bg-gradient-to-l after:from-[#FBFBFD]">
+            <div class="ticker-track space-x-4 flex">
+                <% const techPills = [
+                    {icon:'fa-brands fa-node-js', label:'Node.js', color:'text-green-600 bg-green-50 border-green-100'},
+                    {icon:'fa-solid fa-server', label:'Express', color:'text-gray-600 bg-gray-50 border-gray-100'},
+                    {icon:'fa-brands fa-google', label:'Gemini AI', color:'text-blue-600 bg-blue-50 border-blue-100'},
+                    {icon:'fa-solid fa-database', label:'PostgreSQL', color:'text-cyan-600 bg-cyan-50 border-cyan-100'},
+                    {icon:'fa-solid fa-leaf', label:'MongoDB', color:'text-emerald-600 bg-emerald-50 border-emerald-100'},
+                    {icon:'fa-solid fa-cloud', label:'MinIO S3', color:'text-rose-600 bg-rose-50 border-rose-100'},
+                    {icon:'fa-solid fa-shield', label:'JWT Auth', color:'text-purple-600 bg-purple-50 border-purple-100'},
+                    {icon:'fa-brands fa-js', label:'TypeScript', color:'text-blue-700 bg-blue-50 border-blue-100'},
+                    {icon:'fa-brands fa-node-js', label:'Node.js', color:'text-green-600 bg-green-50 border-green-100'},
+                    {icon:'fa-solid fa-server', label:'Express', color:'text-gray-600 bg-gray-50 border-gray-100'},
+                    {icon:'fa-brands fa-google', label:'Gemini AI', color:'text-blue-600 bg-blue-50 border-blue-100'},
+                    {icon:'fa-solid fa-database', label:'PostgreSQL', color:'text-cyan-600 bg-cyan-50 border-cyan-100'},
+                    {icon:'fa-solid fa-leaf', label:'MongoDB', color:'text-emerald-600 bg-emerald-50 border-emerald-100'},
+                    {icon:'fa-solid fa-cloud', label:'MinIO S3', color:'text-rose-600 bg-rose-50 border-rose-100'},
+                    {icon:'fa-solid fa-shield', label:'JWT Auth', color:'text-purple-600 bg-purple-50 border-purple-100'},
+                    {icon:'fa-brands fa-js', label:'TypeScript', color:'text-blue-700 bg-blue-50 border-blue-100'},
+                ]; %>
+                <% techPills.forEach(t => { %>
+                    <div class="flex items-center space-x-2 px-5 py-3 rounded-2xl border whitespace-nowrap flex-shrink-0 <%= t.color %>">
+                        <i class="<%= t.icon %> text-sm"></i>
+                        <span class="text-[12px] font-bold"><%= t.label %></span>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── 5. Final CTA ── -->
+    <section class="text-center space-y-8 scroll-reveal pb-16">
+        <div class="space-y-4">
+            <h2 class="text-3xl font-bold text-gray-900">Ready to get started?</h2>
+            <p class="text-gray-500 text-lg max-w-xl mx-auto">Create your first collection and digitize your first document in under 5 minutes.</p>
+        </div>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a href="/users/scrolls" class="px-10 py-4 bg-gray-900 text-white rounded-2xl text-sm font-bold hover:bg-black transition-all apple-shadow-lg flex items-center justify-center space-x-2 group">
+                <span>Create a Collection</span>
+                <i class="fas fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+            </a>
+            <a href="/users/dashboard" class="px-10 py-4 bg-white border border-gray-100 text-gray-600 rounded-2xl text-sm font-bold hover:bg-gray-50 transition-all">
+                Go to Dashboard
+            </a>
+        </div>
+    </section>
+</div>
+
+<script>
+    // Scroll reveal trigger
+    const revealEls = document.querySelectorAll('.scroll-reveal');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => observer.observe(el));
+</script>

@@ -1,0 +1,180 @@
+<div class="space-y-8">
+    <div class="flex items-center justify-between border-b border-gray-100 pb-8">
+        <div class="flex items-center space-x-4">
+             <a href="/users/vault" class="h-10 w-10 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center hover:bg-white hover:apple-shadow transition-all group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+             </a>
+             <div>
+                <h1 class="text-2xl font-bold tracking-tight text-gray-900"><%= scroll.name %> Collection</h1>
+                <p class="text-[13px] text-gray-500 mt-1 font-medium">Digitized Records for <span class="font-bold text-purple-600"><%= scroll.department %> Unit</span></p>
+             </div>
+        </div>
+        <div class="flex items-center space-x-3">
+             <div class="hidden md:flex flex-col text-right mr-4">
+                 <p class="text-[10px] text-gray-300 font-bold uppercase tracking-widest">Confidence Index</p>
+                 <p class="text-lg font-bold text-purple-600">99.8%</p>
+             </div>
+             <button onclick="downloadCSV()" class="px-5 py-2.5 bg-white border border-gray-100 text-gray-600 rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-gray-50 hover:apple-shadow transition-all flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+                <span>Export CSV</span>
+             </button>
+        </div>
+    </div>
+
+    <!-- Dynamic Actions Toolbar -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
+        <div class="relative group flex-grow max-w-md">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-purple-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input type="text" id="tableSearch" placeholder="Search across all fields..." oninput="handleSearch(this.value)"
+                   class="w-full pl-11 pr-6 py-3 bg-white border border-gray-100 rounded-[20px] outline-none text-[13px] font-medium transition-all focus:border-purple-200 focus:apple-shadow">
+        </div>
+        <div class="flex items-center space-x-6">
+            <div class="flex items-center space-x-2">
+                <span class="h-1.5 w-1.5 rounded-full bg-purple-600 animate-pulse"></span>
+                <span id="resultCount" class="text-[11px] font-bold text-gray-400 uppercase tracking-widest"><%= records.length %> Records Match</span>
+            </div>
+            <div class="h-6 w-px bg-gray-100"></div>
+            <p class="text-[10px] font-bold text-gray-300 uppercase tracking-widest">Click headers to sort</p>
+        </div>
+    </div>
+
+    <!-- Data Table Card -->
+    <div class="bg-white border border-gray-50 rounded-3xl apple-shadow overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-50/50">
+                        <th class="cursor-pointer group px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50 hover:bg-gray-100/50 transition-colors" onclick="sortTable(0)">
+                            <div class="flex items-center space-x-1.5">
+                                <span>Row ID</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>
+                            </div>
+                        </th>
+                        <% Object.keys(scroll.templateSchema || {}).forEach((key, index) => { %>
+                            <th class="cursor-pointer group px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50 hover:bg-gray-100/50 transition-colors" onclick="sortTable(<%= index + 1 %>)">
+                                <div class="flex items-center space-x-1.5">
+                                    <span><%= key.replace(/_/g, ' ') %></span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" /></svg>
+                                </div>
+                            </th>
+                        <% }) %>
+                        <th class="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    <% if (records && records.length > 0) { %>
+                        <% records.forEach(row => { %>
+                            <tr class="hover:bg-gray-50/30 transition-colors group">
+                                <td class="px-6 py-4 text-[11px] font-mono text-gray-400">#<%= row.id %></td>
+                                <% Object.keys(scroll.templateSchema || {}).forEach(key => { %>
+                                    <td class="px-6 py-4 text-xs text-gray-900"><%= row[key] || '-' %></td>
+                                <% }) %>
+                                <td class="px-6 py-4 text-right">
+                                    <a href="/users/documents/<%= row.document_id %>" class="text-[10px] font-bold text-purple-600 uppercase tracking-widest hover:underline opacity-0 group-hover:opacity-100 transition-opacity">
+                                        View Source
+                                    </a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="<%= Object.keys(scroll.templateSchema || {}).length + 2 %>" class="px-6 py-24 text-center">
+                                <p class="text-sm text-gray-400">No records found in this collection.</p>
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Inject server data into JS context
+    const collectionData = <%- JSON.stringify(records) %>;
+    const templateSchema = <%- JSON.stringify(scroll.templateSchema || {}) %>;
+    const collectionName = "<%= scroll.name %>";
+
+    let currentSort = { col: -1, asc: true };
+
+    function downloadCSV() {
+        if (!collectionData || collectionData.length === 0) return;
+
+        // Prepare headers (Row ID + schema keys)
+        const headers = ['id', ...Object.keys(templateSchema)];
+        
+        // Map rows
+        const csvRows = [
+            headers.join(','), // Header row
+            ...collectionData.map(row => {
+                return headers.map(header => {
+                    const val = row[header] || '-';
+                    // Escape quotes and wrap in quotes for CSV safety
+                    const escaped = ('' + val).replace(/"/g, '""');
+                    return `"${escaped}"`;
+                }).join(',');
+            })
+        ];
+
+        const csvString = csvRows.join('\n');
+        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        
+        link.setAttribute("href", url);
+        link.setAttribute("download", `${collectionName.replace(/\s+/g, '_')}_export.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function handleSearch(query) {
+        const q = query.toLowerCase().trim();
+        const rows = document.querySelectorAll('tbody tr:not(.no-results)');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            const matches = text.includes(q);
+            row.style.display = matches ? '' : 'none';
+            if (matches) visibleCount++;
+        });
+
+        document.getElementById('resultCount').textContent = `${visibleCount} Records Match`;
+        
+        const noResults = document.querySelector('.no-results');
+        if (noResults) noResults.style.display = visibleCount === 0 ? '' : 'none';
+    }
+
+    function sortTable(n) {
+        const table = document.querySelector("table");
+        const tbody = table.querySelector("tbody");
+        const rows = Array.from(tbody.querySelectorAll("tr:not(.no-results)"));
+        
+        if (currentSort.col === n) currentSort.asc = !currentSort.asc;
+        else currentSort = { col: n, asc: true };
+
+        rows.sort((a, b) => {
+            let x = a.getElementsByTagName("TD")[n].innerText.toLowerCase();
+            let y = b.getElementsByTagName("TD")[n].innerText.toLowerCase();
+            
+            // Numeric check
+            const nx = parseFloat(x.replace(/[^0-9.-]/g, ''));
+            const ny = parseFloat(y.replace(/[^0-9.-]/g, ''));
+            if (!isNaN(nx) && !isNaN(ny)) {
+                return currentSort.asc ? nx - ny : ny - nx;
+            }
+
+            return currentSort.asc ? x.localeCompare(y) : y.localeCompare(x);
+        });
+
+        rows.forEach(row => tbody.appendChild(row));
+    }
+</script>

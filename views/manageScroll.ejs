@@ -1,0 +1,317 @@
+<%
+  // ─── Manage Scroll Branding ────────────────────────────────────────────────
+  const dColor = {
+    Land:      'amber',
+    Health:    'emerald',
+    Municipal: 'indigo',
+    Revenue:   'rose',
+    Education: 'sky',
+  }[scroll.department] || 'gray';
+%>
+
+<style>
+    @keyframes manageAppear {
+        from { opacity: 0; transform: translateY(20px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .animate-manage { animation: manageAppear 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .status-dot-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.5); } }
+    .doc-row { transition: all 0.2s ease; }
+    .doc-row:hover { background: rgba(124, 58, 237, 0.03); transform: translateX(4px); }
+</style>
+
+<div class="space-y-10 max-w-6xl mx-auto py-6 animate-manage">
+    <!-- Breadcrumb & Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-gray-100 pb-10">
+        <div class="flex items-center space-x-6">
+            <a href="/users/scrolls" class="h-12 w-12 bg-white border border-gray-100 rounded-full flex items-center justify-center hover:apple-shadow transition-all group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-purple-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+            </a>
+            <div class="space-y-1">
+                <div class="flex items-center space-x-3">
+                    <span class="text-[10px] font-extrabold text-<%= dColor %>-500 uppercase tracking-widest bg-<%= dColor %>-50 px-2 py-0.5 rounded-md"><%= scroll.department %></span>
+                    <span class="text-[10px] font-bold text-gray-300 font-mono tracking-tight opacity-80 decoration-dotted underline underline-offset-4"><%= scroll.pgTableName %></span>
+                </div>
+                <h1 class="text-2xl font-bold tracking-tight text-gray-900 leading-tight"><%= scroll.name %></h1>
+            </div>
+        </div>
+        <div class="flex items-center space-x-3">
+             <button onclick="toggleShareModal()" class="px-6 py-2.5 bg-gray-50 text-purple-600 border border-purple-100/50 text-[12px] font-bold uppercase tracking-widest hover:bg-purple-100 transition-all rounded-full flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+                <span>Share</span>
+             </button>
+             <button onclick="toggleDeleteModal()" class="px-6 py-2.5 bg-white border border-gray-100 text-[12px] font-bold text-gray-400 uppercase tracking-widest hover:text-rose-500 hover:bg-rose-50 hover:border-rose-100 transition-all rounded-full">Delete</button>
+             <form action="/users/scrolls/<%= scroll._id %>/complete" method="POST" data-loader>
+                <button type="submit" class="px-8 py-2.5 bg-purple-600 text-white rounded-full text-[12px] font-bold tracking-widest uppercase shadow-lg shadow-purple-200 hover:bg-purple-700 transition-all transform hover:scale-105 active:scale-95">Finalize Collection</button>
+             </form>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <!-- Sidebar: Configuration & Stats -->
+        <div class="lg:col-span-1 space-y-8">
+            <!-- Anchor Section -->
+            <div class="bg-white rounded-[32px] p-8 apple-shadow space-y-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-[11px] font-extrabold text-gray-400 uppercase tracking-widest">Document Template</h3>
+                    <% if (scroll.anchorDocument) { %>
+                        <div class="h-2 w-2 rounded-full bg-green-500 status-dot-pulse shadow-[0_0_8px_rgba(34,197,94,0.3)]"></div>
+                    <% } %>
+                </div>
+                
+                <% if (scroll.anchorDocument) { %>
+                    <div class="bg-gray-50/80 rounded-[24px] p-5 border border-gray-100/50 flex items-center justify-between group">
+                         <div class="flex items-center space-x-4">
+                             <div class="h-12 w-12 bg-white rounded-2xl flex items-center justify-center text-purple-600 shadow-sm border border-gray-50">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                             </div>
+                             <div>
+                                 <p class="text-[11px] font-bold text-gray-900 tracking-tight">Active Template</p>
+                                 <p class="text-[9px] text-gray-400 font-medium tracking-tight">Ready for Scanning</p>
+                             </div>
+                         </div>
+                         <button class="h-8 w-8 bg-white text-gray-300 rounded-full flex items-center justify-center hover:text-purple-600 hover:apple-shadow shadow-sm transition-all">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                         </button>
+                    </div>
+                <% } else { %>
+                    <div class="border-3 border-dashed border-gray-50 bg-gray-50/20 rounded-[28px] p-10 flex flex-col items-center text-center space-y-4 group hover:border-purple-100 transition-all cursor-pointer" onclick="document.getElementById('anchorUpload').click()">
+                         <div class="h-16 w-16 bg-white text-purple-200 rounded-full flex items-center justify-center group-hover:text-purple-600 transition-all shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                         </div>
+                         <div class="space-y-1">
+                             <p class="text-[13px] font-bold text-gray-800">Upload Sample</p>
+                             <p class="text-[10.5px] text-gray-400 font-medium px-4">Upload a sample to teach the AI how to read your documents.</p>
+                         </div>
+                         <form action="/users/scrolls/<%= scroll._id %>/anchor" method="POST" enctype="multipart/form-data" class="hidden" data-loader>
+                            <input type="file" id="anchorUpload" name="anchor" onchange="this.form.submit()">
+                         </form>
+                    </div>
+                <% } %>
+            </div>
+
+        </div>
+
+        <!-- Main Column: Batch Processing -->
+        <div class="lg:col-span-2 space-y-8">
+            <div class="bg-white rounded-[40px] p-10 apple-shadow min-h-[600px] flex flex-col">
+                <div class="flex items-center justify-between mb-10">
+                    <div>
+                        <h3 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest mb-1">Document List</h3>
+                        <p class="text-xl font-bold text-gray-900 tracking-tight">
+                            <span id="queueCount"><%= documents.length %></span> 
+                            <span class="text-purple-600">Saved</span> Records
+                        </p>
+                    </div>
+                    <div class="flex items-center space-x-6">
+                        <div class="relative group">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-purple-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <input id="docSearch" type="text" placeholder="Locate ref..." oninput="filterDocs(this.value)" class="text-[12px] font-semibold border-b border-gray-100 px-3 pl-9 py-1.5 outline-none focus:border-purple-400 transition-all w-32 bg-transparent placeholder-gray-300">
+                        </div>
+                        <form action="/users/scrolls/<%= scroll._id %>/upload" method="POST" enctype="multipart/form-data" data-loader>
+                            <input type="file" id="batchUpload" name="documents" multiple class="hidden" onchange="this.form.submit()">
+                            <button type="button" onclick="document.getElementById('batchUpload').click()" class="bg-purple-50 text-purple-600 px-6 py-2.5 rounded-full text-[12px] font-bold uppercase tracking-widest hover:bg-purple-100 transition-all flex items-center space-x-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                                <span>Bulk Upload</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <% if (documents && documents.length > 0) { %>
+                    <div class="grid grid-cols-1 gap-3.5">
+                        <% documents.forEach(doc => { %>
+                            <div class="doc-row flex items-center justify-between px-6 py-5 bg-gray-50/40 rounded-[24px] border border-transparent hover:border-purple-100/50 hover:bg-white hover:apple-shadow group transition-all" 
+                                 data-name="<%= (doc.name || '').toLowerCase() %>"
+                                 data-ref="KMA-<%= (doc._id || '').toString().slice(-6).toUpperCase() %>">
+                                <div class="flex items-center space-x-5">
+                                    <div class="h-12 w-12 bg-white rounded-2xl flex items-center justify-center text-gray-400 border border-gray-50 shadow-sm group-hover:bg-purple-50 group-hover:text-purple-600 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                    </div>
+                                    <div class="space-y-0.5">
+                                        <div class="flex items-center space-x-2">
+                                            <p class="text-[12px] font-bold text-gray-800 tracking-tight line-clamp-1"><%= doc.name %></p>
+                                            <% if (doc.flaggedForReview) { %>
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-amber-500 fill-current" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                                                </svg>
+                                            <% } %>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <p class="text-[8px] font-bold text-gray-300 font-mono tracking-tight uppercase tracking-[0.2em]">KMA-<%= (doc._id || '').toString().slice(-6).toUpperCase() %></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-10">
+                                    <div class="flex items-center space-x-3">
+                                        <span class="h-1.5 w-1.5 rounded-full <%= doc.status === 'done' ? 'bg-green-500 shadow-[0_0_5px_rgba(34,197,94,0.5)]' : 'bg-amber-400 shadow-[0_0_5px_rgba(251,191,36,0.5)]' %>"></span>
+                                        <span class="text-[10px] font-extrabold uppercase tracking-[0.15em] <%= doc.status === 'done' ? 'text-green-600' : 'text-amber-600' %>">
+                                            <%= doc.status %>
+                                        </span>
+                                    </div>
+                                    <a href="/users/documents/<%= doc._id %>" class="h-10 w-10 bg-white rounded-full border border-gray-100 flex items-center justify-center text-gray-300 hover:text-purple-600 hover:border-purple-100 hover:apple-shadow shadow-sm transition-all">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" /></svg>
+                                    </a>
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+                <% } else { %>
+                    <div class="flex-grow flex flex-col items-center justify-center py-20 text-center space-y-6">
+                        <div class="h-28 w-28 bg-gray-50 rounded-[40px] flex items-center justify-center text-gray-200 border border-gray-100/50 shadow-inner">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                        </div>
+                        <div class="space-y-1.5">
+                            <p class="text-[17px] font-bold text-gray-800 tracking-tight">Active Batch is Void</p>
+                            <p class="text-sm text-gray-400 font-medium max-w-[280px] leading-relaxed">No physical assets mapped to this scroll yet. Begin data ingestion via bulk upload.</p>
+                        </div>
+                        <button onclick="document.getElementById('batchUpload').click()" class="px-10 py-3 bg-purple-600 text-white rounded-full text-xs font-bold uppercase tracking-widest shadow-lg shadow-purple-200 hover:bg-purple-700 hover:shadow-purple-300 transition-all">Injest Media</button>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Share Modal -->
+<div id="shareModal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-6">
+    <div class="bg-white w-full max-w-md rounded-[40px] apple-shadow-lg overflow-hidden animate-manage">
+        <div class="p-10 space-y-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900 tracking-tight">Share Scroll</h3>
+                    <p class="text-[13px] text-gray-400 font-medium mt-1">Manage access for this collection</p>
+                </div>
+                <button onclick="toggleShareModal()" class="h-10 w-10 flex items-center justify-center text-gray-300 hover:text-gray-900 transition-colors hover:bg-gray-50 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+
+            <!-- Current Access -->
+            <div class="space-y-4">
+                <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest pl-1">Who has access</h4>
+                <div class="space-y-3 max-h-[200px] overflow-y-auto pr-2 custom-scrollbar">
+                    <!-- Owner -->
+                    <div class="flex items-center justify-between p-3.5 bg-purple-50/30 rounded-[24px] border border-purple-100/30">
+                        <div class="flex items-center space-x-4">
+                            <div class="h-10 w-10 rounded-full bg-purple-600 flex items-center justify-center text-white text-[11px] font-bold shadow-lg shadow-purple-100">O</div>
+                            <div class="space-y-0.5">
+                                <p class="text-[12px] font-bold text-gray-800">Primary Owner</p>
+                                <p class="text-[10px] text-gray-400 font-medium">Full Control</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <% if (scroll.sharedWith && scroll.sharedWith.length > 0) { %>
+                        <% scroll.sharedWith.forEach(collab => { %>
+                            <div class="flex items-center justify-between p-3.5 bg-gray-50/50 rounded-[24px] border border-transparent hover:border-gray-100 group transition-all">
+                                <div class="flex items-center space-x-4">
+                                    <div class="h-10 w-10 rounded-full bg-white border border-gray-100 flex items-center justify-center text-gray-400 text-[11px] font-bold uppercase shadow-sm"><%= collab.email[0] %></div>
+                                    <div class="space-y-0.5">
+                                        <p class="text-[12px] font-bold text-gray-800 truncate max-w-[150px]"><%= collab.email %></p>
+                                        <p class="text-[10px] text-purple-500 font-extrabold uppercase tracking-widest bg-purple-50 px-1.5 py-0.5 rounded-md inline-block"><%= collab.role %></p>
+                                    </div>
+                                </div>
+                                <% if (locals.isOwner) { %>
+                                    <form action="/users/scrolls/<%= scroll._id %>/revoke" method="POST" class="opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <input type="hidden" name="email" value="<%= collab.email %>">
+                                        <button type="submit" class="p-2 text-gray-300 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-all">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                        </button>
+                                    </form>
+                                <% } %>
+                            </div>
+                        <% }) %>
+                    <% } %>
+                </div>
+            </div>
+
+            <% if (locals.isOwner) { %>
+                <div class="pt-8 border-t border-gray-100 space-y-6">
+                    <h4 class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest pl-1">Invite Member</h4>
+                    <form action="/users/scrolls/<%= scroll._id %>/share" method="POST" class="space-y-4">
+                        <div class="space-y-2">
+                             <input type="email" name="email" required placeholder="name@example.com" class="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl text-[13px] font-medium focus:ring-4 focus:ring-purple-100/50 transition-all placeholder-gray-300">
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="flex-1">
+                                <select name="role" class="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl text-[12px] font-bold text-gray-600 focus:ring-4 focus:ring-purple-100/50 transition-all appearance-none cursor-pointer">
+                                    <option value="viewer">Viewer Only</option>
+                                    <option value="editor">Authorized Editor</option>
+                                    <option value="admin">Collection Admin</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="px-8 py-4 bg-purple-600 text-white rounded-2xl text-[12px] font-bold hover:bg-purple-700 transition-all apple-shadow active:scale-95">Send Invite</button>
+                        </div>
+                    </form>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<!-- Terminate Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-6">
+    <div class="bg-white w-full max-w-sm rounded-[40px] apple-shadow-lg p-10 space-y-8 animate-manage">
+        <div class="text-center space-y-4">
+            <div class="h-20 w-20 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto ring-8 ring-rose-50/50 shadow-inner">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-gray-900 tracking-tight">Delete Scroll Campaign?</h3>
+                <p class="text-[13px] text-gray-400 font-medium mt-2 leading-relaxed px-2">Permanently purge <strong class="text-gray-700"><%= scroll.name %></strong> and its dedicated PG mapping?</p>
+            </div>
+        </div>
+        <form action="/users/scrolls/<%= scroll._id %>/delete" method="POST" class="flex flex-col space-y-3" data-loader>
+             <button type="submit" class="w-full py-4 bg-rose-500 text-white rounded-full text-sm font-bold hover:bg-rose-600 apple-shadow shadow-rose-200 transition-all">Confirm Termination</button>
+            <button type="button" onclick="toggleDeleteModal()" class="w-full py-4 text-sm font-bold text-gray-400 hover:text-gray-600 transition-colors">Go Back</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleDeleteModal() {
+        document.getElementById('deleteModal').classList.toggle('hidden');
+    }
+    function toggleShareModal() {
+        document.getElementById('shareModal').classList.toggle('hidden');
+    }
+    
+    function showLoader() {
+        document.getElementById('loadingOverlay').classList.remove('hidden');
+    }
+
+    // Auto-show loader for all forms and file uploads in this page
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', () => showLoader());
+    });
+
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) toggleDeleteModal();
+    });
+    
+    document.getElementById('shareModal').addEventListener('click', function(e) {
+        if (e.target === this) toggleShareModal();
+    });
+
+    function filterDocs(query) {
+        const q = (query || '').toLowerCase().trim();
+        const rows = document.querySelectorAll('.doc-row');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const name = row.dataset.name || '';
+            const ref = (row.dataset.ref || '').toLowerCase();
+            const matches = q === '' || name.includes(q) || ref.includes(q);
+            row.style.display = matches ? '' : 'none';
+            if (matches) visibleCount++;
+        });
+
+        document.getElementById('queueCount').textContent = visibleCount;
+    }
+</script>

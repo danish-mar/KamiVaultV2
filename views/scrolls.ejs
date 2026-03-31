@@ -1,0 +1,222 @@
+<%
+  // ─── Apple-Refined Helpers ──────────────────────────────────────────────────
+  const deptMap = {
+    Land:      { icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z', color: 'amber' },
+    Health:    { icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10', color: 'emerald' },
+    Municipal: { icon: 'M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z', color: 'indigo' },
+    Revenue:   { icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', color: 'rose' },
+    Education: { icon: 'M12 14l9-5-9-5-9 5 9 5z M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z', color: 'sky' },
+  };
+  function getDept(d) { return deptMap[d] || { icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', color: 'gray' }; }
+%>
+
+<style>
+    @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-slide-up { animation: slideUp 0.5s ease-out forwards; animation-delay: calc(var(--animation-order) * 0.05s); opacity: 0; }
+    .scroll-card { transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+    .scroll-card:hover { transform: scale(1.015); box-shadow: 0 20px 40px -20px rgba(0,0,0,0.1); }
+    .search-focus:focus-within { border-color: rgba(139, 92, 246, 0.3); background: white; }
+</style>
+
+<div class="space-y-8 max-w-6xl mx-auto py-4">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div class="space-y-1">
+            <h1 class="text-2xl font-bold tracking-tight text-gray-900">Scrolls</h1>
+            <p class="text-[13px] text-gray-500 font-medium tracking-tight">Digitized record campaigns and secure batches</p>
+        </div>
+        <button onclick="toggleModal()" class="bg-purple-600 text-white px-6 py-2.5 rounded-full text-[12px] font-bold shadow-lg shadow-purple-200 hover:bg-purple-700 transition-all flex items-center space-x-2 w-fit group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+            </svg>
+            <span>Initialize Campaign</span>
+        </button>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-focus flex items-center bg-gray-50/50 border border-transparent rounded-[20px] px-5 py-0.5 transition-all duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input id="scrollSearch" type="text" placeholder="Search across naming or departments..." oninput="filterScrolls(this.value)" class="w-full bg-transparent px-4 py-3 outline-none text-[14px] font-medium text-gray-800 placeholder-gray-400">
+        <div class="flex items-center space-x-2">
+            <div class="hidden sm:flex text-[10px] font-bold text-gray-300 border border-gray-200 px-1.5 py-0.5 rounded-md uppercase tracking-widest">CMD</div>
+            <div class="hidden sm:flex text-[10px] font-bold text-gray-300 border border-gray-200 px-1.5 py-0.5 rounded-md uppercase tracking-widest">K</div>
+        </div>
+    </div>
+
+    <!-- Grid Section -->
+    <div id="scrollGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <% if (locals.scrolls && scrolls.length > 0) { %>
+            <% scrolls.forEach((scroll, index) => { %>
+                <% const d = getDept(scroll.department); %>
+                <div class="scroll-card bg-white p-7 rounded-[32px] apple-shadow flex flex-col justify-between group animate-slide-up" 
+                     style="--animation-order: <%= index %>;"
+                     data-name="<%= (scroll.name || '').toLowerCase() %>"
+                     data-dept="<%= (scroll.department || '').toLowerCase() %>">
+                    
+                    <div>
+                        <div class="flex items-start justify-between mb-8">
+                            <div class="h-12 w-12 bg-<%= d.color %>-50 text-<%= d.color %>-600 rounded-2xl flex items-center justify-center transition-colors group-hover:bg-<%= d.color %>-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="<%= d.icon %>" />
+                                </svg>
+                            </div>
+                            <div class="px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-widest <%= (scroll.status || 'draft') === 'complete' ? 'bg-green-50 text-green-600' : (scroll.status || 'draft') === 'in_progress' ? 'bg-blue-50 text-blue-600' : 'bg-gray-50 text-gray-400' %>">
+                                <%= (scroll.status || 'draft').replace('_', ' ') %>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <h3 class="text-[15px] font-bold text-gray-900 group-hover:text-purple-600 transition-colors leading-tight"><%= scroll.name %></h3>
+                            <div class="flex items-center space-x-2 text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                                <span><%= scroll.department %></span>
+                                <span class="text-gray-200">/</span>
+                                <span class="font-mono text-[8px] lowercase opacity-60 tracking-tight"><%= scroll.pgTableName %></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex flex-wrap gap-1.5 min-h-[40px] items-start">
+                        <% if (scroll.templateSchema && Object.keys(scroll.templateSchema).length > 0) { %>
+                            <% Object.keys(scroll.templateSchema).slice(0, 5).forEach(key => { %>
+                                <span class="px-2 py-0.5 bg-gray-50 text-[9px] font-extrabold text-gray-500 rounded-md border border-gray-100 uppercase tracking-tight">
+                                    <%= key.replace(/_/g, ' ') %>
+                                </span>
+                            <% }) %>
+                            <% if (Object.keys(scroll.templateSchema).length > 5) { %>
+                                <span class="text-[9px] font-bold text-gray-300 self-center ml-1">+<%= Object.keys(scroll.templateSchema).length - 5 %> more</span>
+                            <% } %>
+                        <% } else { %>
+                            <span class="text-[10px] italic text-gray-300 font-medium self-center">No template extracted yet</span>
+                        <% } %>
+                    </div>
+
+                    <div class="mt-10 pt-5 border-t border-gray-50 flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                             <div class="h-1.5 w-1.5 rounded-full <%= (scroll.status || 'draft') === 'complete' ? 'bg-green-500' : 'bg-amber-400' %>"></div>
+                             <span class="text-[11px] text-gray-500 font-semibold"><%= scroll.docCount || 0 %> Documents</span>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <button onclick="confirmDelete('<%= scroll._id %>', '<%= (scroll.name || '').replace(/'/g, "\\'") %>')" class="text-gray-300 hover:text-red-500 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            </button>
+                            <a href="/users/scrolls/<%= scroll._id %>" class="h-9 w-9 bg-gray-50 text-gray-900 rounded-full flex items-center justify-center hover:bg-purple-600 hover:text-white transition-all shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" /></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        <% } %>
+
+        <!-- Ghost Card -->
+        <div onclick="toggleModal()" class="border-2 border-dashed border-gray-200 rounded-[32px] p-8 flex flex-col items-center justify-center space-y-4 text-center group hover:border-purple-200 hover:bg-purple-50/10 transition-all cursor-pointer min-h-[260px]">
+             <div class="h-14 w-14 bg-gray-50 text-gray-300 rounded-full flex items-center justify-center group-hover:bg-purple-100 group-hover:text-purple-600 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+             </div>
+             <div class="space-y-0.5">
+                <p class="text-[14px] font-bold text-gray-900 group-hover:text-purple-700 transition-colors tracking-tight">Create New Campaign</p>
+                <p class="text-[10px] text-gray-400 font-medium font-medium">Initialize a digital flow and PG table</p>
+             </div>
+        </div>
+    </div>
+
+    <!-- Empty Stats Section -->
+    <div id="noResults" class="hidden flex flex-col items-center justify-center py-20 animate-slide-up">
+        <div class="h-16 w-16 bg-gray-50 rounded-full flex items-center justify-center text-gray-300 mb-6 font-mono text-xl font-bold">?</div>
+        <p class="text-xs font-semibold text-gray-500">No campaigns match your search.</p>
+    </div>
+</div>
+
+<!-- Creation Modal -->
+<div id="modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-6 bg-gray-900/40 backdrop-blur-md">
+    <div class="bg-white w-full max-w-lg rounded-[36px] apple-shadow-lg overflow-hidden transform transition-all">
+        <div class="p-10 space-y-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900 tracking-tight">New Campaign</h3>
+                    <p class="text-[13px] text-gray-400 font-medium mt-1">Configure your digitization scroll</p>
+                </div>
+                <button onclick="toggleModal()" class="h-9 w-9 flex items-center justify-center text-gray-300 hover:text-gray-900 transition-colors hover:bg-gray-50 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+
+            <form action="/users/scrolls" method="POST" class="space-y-6" data-loader>
+                <div class="space-y-2">
+                    <label for="name" class="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest pl-1">Scroll Name</label>
+                    <input type="text" id="name" name="name" required placeholder="e.g. Ward 5 Land Records 1990" 
+                           class="w-full px-5 py-3.5 bg-gray-50 rounded-2xl border border-transparent focus:bg-white focus:border-purple-200 outline-none transition-all text-sm font-medium">
+                </div>
+
+                <div class="space-y-2">
+                    <label for="department" class="block text-[10px] font-extrabold text-gray-400 uppercase tracking-widest pl-1">Target Department</label>
+                    <select id="department" name="department" required 
+                            class="w-full px-5 py-3.5 bg-gray-50 rounded-2xl border border-transparent focus:bg-white focus:border-purple-200 outline-none transition-all text-sm font-medium">
+                        <option value="Land">Land Department</option>
+                        <option value="Health">Health Department</option>
+                        <option value="Municipal">Municipal Corporation</option>
+                        <option value="Revenue">Revenue Department</option>
+                        <option value="Education">Education Department</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="w-full bg-purple-600 text-white py-4 rounded-full text-[13px] font-bold hover:bg-purple-700 transition-all shadow-lg shadow-purple-100">Create Campaign</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-6 bg-gray-900/40 backdrop-blur-md">
+    <div class="bg-white w-full max-w-sm rounded-[36px] apple-shadow-lg p-10 space-y-6 animate-slide-up">
+        <div class="text-center space-y-4">
+            <div class="h-16 w-16 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-gray-900 tracking-tight">Delete Scroll?</h3>
+                <p class="text-[12px] text-gray-400 font-medium mt-2 leading-relaxed">Permanently delete <strong id="deleteScrollName" class="text-gray-700"></strong> and its records?</p>
+            </div>
+        </div>
+        <form id="deleteForm" method="POST" class="flex flex-col space-y-3">
+             <button type="submit" class="w-full py-4 bg-rose-500 text-white rounded-full text-xs font-bold hover:bg-rose-600 transition-all">Confirm Delete</button>
+            <button type="button" onclick="closeDeleteModal()" class="w-full py-2 text-xs font-bold text-gray-400 hover:text-gray-600 transition-colors">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleModal() {
+        const m = document.getElementById('modal');
+        m.classList.toggle('hidden');
+    }
+    function confirmDelete(id, name) {
+        document.getElementById('deleteScrollName').textContent = name;
+        document.getElementById('deleteForm').action = `/users/scrolls/${id}/delete`;
+        document.getElementById('deleteModal').classList.remove('hidden');
+    }
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+    }
+
+    function filterScrolls(query) {
+        const q = query.toLowerCase().trim();
+        const cards = document.querySelectorAll('.scroll-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const name = card.dataset.name || '';
+            const dept = card.dataset.dept || '';
+            const matches = name.includes(q) || dept.includes(q);
+            card.style.display = matches ? '' : 'none';
+            if (matches) visibleCount++;
+        });
+
+        document.getElementById('noResults').classList.toggle('hidden', visibleCount > 0 || q === '');
+    }
+
+    document.getElementById('modal').addEventListener('click', (e) => { if (e.target === document.getElementById('modal')) toggleModal(); });
+    document.getElementById('deleteModal').addEventListener('click', (e) => { if (e.target === document.getElementById('deleteModal')) closeDeleteModal(); });
+</script>

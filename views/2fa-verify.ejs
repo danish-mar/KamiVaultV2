@@ -1,0 +1,50 @@
+<div class="max-w-md mx-auto space-y-8 py-20">
+    <div class="text-center space-y-2">
+        <div class="h-16 w-16 bg-purple-600 rounded-[28px] mx-auto flex items-center justify-center text-white shadow-2xl shadow-purple-200 mb-6 pulse-ring">
+            <i class="fas fa-shield-halved text-2xl"></i>
+        </div>
+        <h2 class="text-3xl font-bold tracking-tight text-gray-900">Two-Factor Authentication</h2>
+        <p class="text-sm text-gray-500 max-w-xs mx-auto">Please enter the 6-digit code from your authenticator app to complete sign-in.</p>
+    </div>
+
+    <div class="bg-white border border-gray-100 p-10 rounded-[32px] apple-shadow-lg space-y-8 relative overflow-hidden">
+        <!-- Decoration -->
+        <div class="absolute -bottom-8 -left-8 h-32 w-32 bg-purple-50 rounded-full blur-3xl opacity-50"></div>
+        
+        <form action="/auth/2fa" method="POST" class="space-y-6">
+            <div class="space-y-3">
+                <label for="token" class="block text-[11px] font-extrabold text-gray-400 uppercase tracking-widest text-center">Security Code</label>
+                <input type="text" 
+                       id="token" 
+                       name="token" 
+                       required 
+                       maxlength="6" 
+                       placeholder="000000" 
+                       pattern="[0-9]{6}"
+                       class="w-full text-center text-2xl font-black tracking-[0.4em] px-5 py-5 bg-gray-50 border border-transparent rounded-[24px] focus:bg-white focus:border-purple-200 focus:apple-shadow outline-none transition-all placeholder:text-gray-200">
+                
+                <% if (typeof error !== 'undefined' && error) { %>
+                    <p class="text-[11px] font-bold text-rose-500 text-center animate-pulse"><i class="fas fa-triangle-exclamation mr-1"></i> <%= error %></p>
+                <% } %>
+            </div>
+
+            <button type="submit" class="w-full bg-gray-900 text-white py-5 rounded-[24px] text-sm font-bold shadow-xl shadow-gray-200 hover:bg-black transition-all flex items-center justify-center space-x-3 group">
+                <span>Sign In Securely</span>
+                <i class="fas fa-shield-check text-[10px] group-hover:scale-110 transition-transform"></i>
+            </button>
+        </form>
+    </div>
+
+    <div class="text-center text-[11px] text-gray-400 space-y-1">
+        <p>Lose access to your authenticator? <a href="#" class="text-purple-600 hover:underline">Contact Support</a>.</p>
+    </div>
+</div>
+
+<style>
+    @keyframes pulse-ring {
+        0% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4); }
+        70% { box-shadow: 0 0 0 15px rgba(124, 58, 237, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0); }
+    }
+    .pulse-ring { animation: pulse-ring 2s infinite; }
+</style>
